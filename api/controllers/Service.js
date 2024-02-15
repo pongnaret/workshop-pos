@@ -29,10 +29,10 @@ module.exports = {
         const payLoad = jwt.decode(token);
         return payLoad.id;
     },
-    getAdminId: (req) => {
-        const jwt = require('jsonwebtoken');
-        const token = req.headers.authorization.replace('Bearer ', '');
-        const payLoad = jwt.decode(token);
-        return payLoad.id;
-    }
+    // getAdminId: (req) => {
+    //     const jwt = require('jsonwebtoken');
+    //     const token = req.headers.authorization.replace('Bearer ', '');
+    //     const payLoad = jwt.decode(token);
+    //     return payLoad.id;
+    // }
 }

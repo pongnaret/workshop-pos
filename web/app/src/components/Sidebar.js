@@ -1,57 +1,28 @@
-import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
+import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import config from "../config";
 import { Link } from "react-router-dom";
-import Modal from "../components/Modal";
+//import Modal from "../components/Modal";
 
-const Sidebar = forwardRef((props, sidebarRef) => {
+function Sidebar() {
   const [memberName, setMemberName] = useState();
   const [packageName, setPackageName] = useState();
-  const [packages, setPackages] = useState([]);
-  const [totalBill, setTotalBill] = useState(0);
-  const [billAmount, setBillAmount] = useState(0);
-  const [banks, setBanks] = useState([]);
-  const [choosePackage, setChoosePackage] = useState({});
 
   useEffect(() => {
     fetchData();
-    fetchDataTotalBill();
-  }, []);
-
-  const fetchDataTotalBill = async () => {
-    try {
-      await axios
-        .get(config.api_path + "/package/countBill", config.headers())
-        .then((res) => {
-          if (res.data.totalBill != undefined) {
-            setTotalBill(res.data.totalBill);
-          }
-        })
-        .catch((err) => {
-          throw err.response.data;
-        });
-    } catch (e) {
-      Swal.fire({
-        title: "error",
-        text: e.message,
-        icon: "error",
-      });
-    }
-  };
+    //fetchDataTotalBill();
+  });
 
   const fetchData = async () => {
     try {
-      axios
-        .get(config.api_path + "/member/info", config.headers())
-        .then((res) => {
+      axios.get(config.api_path + '/member/info', config.headers()).then(res => {
           if (res.data.message === "success") {
             setMemberName(res.data.result.name);
             setPackageName(res.data.result.package.name);
-            setBillAmount(res.data.result.package.bill_amount);
+            // setBillAmount(res.data.result.package.bill_amount);
           }
-        })
-        .catch((err) => {
+        }).catch(err => {
           throw err.response.data;
         });
     } catch (e) {
@@ -63,329 +34,722 @@ const Sidebar = forwardRef((props, sidebarRef) => {
     }
   };
 
-  const fetchPackages = async () => {
-    try {
-      await axios.get(config.api_path + "/package/list").then((res) => {
-        if (res.data.results.length > 0) {
-          setPackages(res.data.results);
-        }
-      });
-    } catch (e) {
-      Swal.fire({
-        title: "error",
-        text: e.message,
-        icon: "error",
-      });
-    }
-  };
-
-  const renderButton = (item) => {
-    if (packageName === item.name) {
-      return (
-        <button className="btn btn-primary btn-lg disabled" disabled>
-          <i className="fa fa-check me-2"></i>
-          เลือกแพกเกจ
-        </button>
-      );
-    } else {
-      return (
-        <button
-          data-toggle="modal"
-          data-target="#modalBank"
-          onClick={(e) => handleChoosePackage(item)}
-          className="btn btn-primary btn-lg"
-        >
-          <i className="fa fa-check me-2"></i>
-          เลือกแพกเกจ
-        </button>
-      );
-    }
-  };
-
-  const handleChoosePackage = (item) => {
-    setChoosePackage(item);
-    fetchDataBank();
-  };
-
-  const fetchDataBank = async () => {
-    if (banks.length == 0) {
-      try {
-        await axios
-          .get(config.api_path + "/bank/list", config.headers())
-          .then((res) => {
-            if (res.data.message === "success") {
-              setBanks(res.data.results);
-            }
-          })
-          .catch((err) => {
-            throw err.response.data;
-          });
-      } catch (e) {
-        Swal.fire({
-          title: "error",
-          text: e.message,
-          icon: "error",
-        });
-      }
-    }
-  };
-
-  const computePercen = (totalBill, billAmount) => {
-    if (billAmount > 0) {
-      return (totalBill * 100) / billAmount;
-    } else {
-      return 0;
-    }
-  };
-
-  const handleChangePackage = async () => {
-    try {
-      axios
-        .get(
-          config.api_path + "/package/changePackage/" + choosePackage.id,
-          config.headers()
-        )
-        .then((res) => {
-          if (res.data.message === "success") {
-            Swal.fire({
-              title: "ส่งข้อมูล",
-              text: "ส่งข้อมูลการขอเปลี่ยน แพกเกจ ของคุณแล้ว",
-              icon: "success",
-              timer: 2000,
-            });
-
-            const btns = document.getElementsByClassName("btnClose");
-            for (let i = 0; i < btns.length; i++) btns[i].click();
-          }
-        })
-        .catch((err) => {
-          throw err.response.data;
-        });
-    } catch (e) {
-      Swal.fire({
-        title: "error",
-        text: e.message,
-        icon: "error",
-      });
-    }
-  };
-
-  useImperativeHandle(sidebarRef, () => ({
-    refreshCountBill() {
-      fetchDataTotalBill();
-    },
-  }));
-
   return (
     <>
-      <aside className="main-sidebar sidebar-dark-primary elevation-4">
-        <a href="index3.html" className="brand-link">
+      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a href="index3.html" class="brand-link">
           <img
             src="dist/img/AdminLTELogo.png"
             alt="AdminLTE Logo"
-            className="brand-image img-circle elevation-3"
-            style={{ opacity: ".8" }}
+            class="brand-image img-circle elevation-3"
+            style={{ opacity: 0.8 }}
           />
-          <span className="brand-text font-weight-light">POS on Cloud</span>
+          <span class="brand-text font-weight-light">AdminLTE 3</span>
         </a>
-
-        <div className="sidebar">
-          <div className="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div className="image">
+        <div class="sidebar">
+          <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
               <img
                 src="dist/img/user2-160x160.jpg"
-                className="img-circle elevation-2"
+                class="img-circle elevation-2"
                 alt="User Image"
               />
             </div>
-            <div className="info text-white d-grid">
+            <div class="info text-white">
               <div>{memberName}</div>
-              <div>Package: {packageName}</div>
-              <div className="d-grid gap-0 d-md-block">
-                <button
-                  onClick={fetchPackages}
-                  data-toggle="modal"
-                  data-target="#modalPackage"
-                  type="button"
-                  className="btn btn-warning mt-2"
-                >
-                  <i className="fa fa-arrow-up me-2"></i>
-                  Upgrade
+              <div>Package:{packageName}</div>
+            </div>
+          </div>
+
+          <div class="form-inline">
+            <div class="input-group" data-widget="sidebar-search">
+              <input
+                class="form-control form-control-sidebar"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+              />
+              <div class="input-group-append">
+                <button class="btn btn-sidebar">
+                  <i class="fas fa-search fa-fw"></i>
                 </button>
               </div>
             </div>
           </div>
 
-          <div>
-            <div className="ms-2 me-2 text-white">
-              <div className="float-start">
-                {totalBill} / {billAmount.toLocaleString("th-TH")}
-              </div>
-              <div className="float-end">
-                {billAmount > 0 ? computePercen(totalBill, billAmount) : 0} %
-              </div>
-              <div className="clearfix"></div>
-            </div>
-            <div className="progress ms-2 me-2">
-              <div
-                className="progress-bar"
-                role="progressbar"
-                style={{ width: computePercen(totalBill, billAmount) + "%" }}
-                aria-valuenow={totalBill}
-                aria-valuemin="0"
-                aria-valuemax="100"
-              ></div>
-            </div>
-          </div>
-
-          <nav className="mt-2">
+          <nav class="mt-2">
             <ul
-              className="nav nav-pills nav-sidebar flex-column"
+              class="nav nav-pills nav-sidebar flex-column"
               data-widget="treeview"
               role="menu"
               data-accordion="false"
             >
-              <li className="nav-item">
-                <a href="pages/widgets.html" className="nav-link">
-                  <i className="nav-icon fas fa-th"></i>
-                  <p>Dashboard</p>
+              <li class="nav-item menu-open">
+                <a href="#" class="nav-link active">
+                  <i class="nav-icon fas fa-tachometer-alt"></i>
+                  <p>
+                    Dashboard
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="./index.html" class="nav-link active">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Dashboard v1</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./index2.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Dashboard v2</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./index3.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Dashboard v3</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="pages/widgets.html" class="nav-link">
+                  <i class="nav-icon fas fa-th"></i>
+                  <p>
+                    Widgets
+                    <span class="right badge badge-danger">New</span>
+                  </p>
                 </a>
               </li>
-              <li className="nav-item">
-                <Link to="/sale" className="nav-link">
-                  <i className="nav-icon fa fa-dollar-sign"></i>
-                  <p>ขายสินค้า</p>
-                </Link>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-copy"></i>
+                  <p>
+                    Layout Options
+                    <i class="fas fa-angle-left right"></i>
+                    <span class="badge badge-info right">6</span>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="pages/layout/top-nav.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Top Navigation</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="pages/layout/top-nav-sidebar.html"
+                      class="nav-link"
+                    >
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Top Navigation + Sidebar</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/layout/boxed.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Boxed</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/layout/fixed-sidebar.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Fixed Sidebar</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="pages/layout/fixed-sidebar-custom.html"
+                      class="nav-link"
+                    >
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>
+                        Fixed Sidebar <small>+ Custom Area</small>
+                      </p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/layout/fixed-topnav.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Fixed Navbar</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/layout/fixed-footer.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Fixed Footer</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="pages/layout/collapsed-sidebar.html"
+                      class="nav-link"
+                    >
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Collapsed Sidebar</p>
+                    </a>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/product" className="nav-link">
-                  <i className="nav-icon fas fa-box"></i>
-                  <p>สินค้า</p>
-                </Link>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-chart-pie"></i>
+                  <p>
+                    Charts
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="pages/charts/chartjs.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>ChartJS</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/charts/flot.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Flot</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/charts/inline.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Inline</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/charts/uplot.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>uPlot</p>
+                    </a>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/user" className="nav-link">
-                  <i className="nav-icon fas fa-person"></i>
-                  <p>ผู้ใช้งานระบบ</p>
-                </Link>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-tree"></i>
+                  <p>
+                    UI Elements
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="pages/UI/general.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>General</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/UI/icons.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Icons</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/UI/buttons.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Buttons</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/UI/sliders.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Sliders</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/UI/modals.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Modals & Alerts</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/UI/navbar.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Navbar & Tabs</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/UI/timeline.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Timeline</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/UI/ribbons.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Ribbons</p>
+                    </a>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/sumSalePerDay" className="nav-link">
-                  <i className="nav-icon fas fa-file-alt"></i>
-                  <p>สรุปยอดขายรายวัน</p>
-                </Link>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-edit"></i>
+                  <p>
+                    Forms
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="pages/forms/general.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>General Elements</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/forms/advanced.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Advanced Elements</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/forms/editors.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Editors</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/forms/validation.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Validation</p>
+                    </a>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/billSales" className="nav-link">
-                  <i className="nav-icon fas fa-list-alt"></i>
-                  <p>รายงานบิลขาย</p>
-                </Link>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-table"></i>
+                  <p>
+                    Tables
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="pages/tables/simple.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Simple Tables</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/tables/data.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>DataTables</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/tables/jsgrid.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>jsGrid</p>
+                    </a>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/stock" className="nav-link">
-                  <i className="nav-icon fas fa-home"></i>
-                  <p>รับสินค้าเข้า Stock</p>
-                </Link>
+              <li class="nav-header">EXAMPLES</li>
+              <li class="nav-item">
+                <a href="pages/calendar.html" class="nav-link">
+                  <i class="nav-icon far fa-calendar-alt"></i>
+                  <p>
+                    Calendar
+                    <span class="badge badge-info right">2</span>
+                  </p>
+                </a>
               </li>
-              <li className="nav-item">
-                <Link to="/reportStock" className="nav-link">
-                  <i className="nav-icon fas fa-file"></i>
-                  <p>รายงาน Stock</p>
-                </Link>
+              <li class="nav-item">
+                <a href="pages/gallery.html" class="nav-link">
+                  <i class="nav-icon far fa-image"></i>
+                  <p>Gallery</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="pages/kanban.html" class="nav-link">
+                  <i class="nav-icon fas fa-columns"></i>
+                  <p>Kanban Board</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon far fa-envelope"></i>
+                  <p>
+                    Mailbox
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="pages/mailbox/mailbox.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Inbox</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/mailbox/compose.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Compose</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/mailbox/read-mail.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Read</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-book"></i>
+                  <p>
+                    Pages
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="pages/examples/invoice.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Invoice</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/profile.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Profile</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/e-commerce.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>E-commerce</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/projects.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Projects</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/project-add.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Project Add</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/project-edit.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Project Edit</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="pages/examples/project-detail.html"
+                      class="nav-link"
+                    >
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Project Detail</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/contacts.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Contacts</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/faq.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>FAQ</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/contact-us.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Contact us</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon far fa-plus-square"></i>
+                  <p>
+                    Extras
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>
+                        Login & Register v1
+                        <i class="fas fa-angle-left right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                        <a href="pages/examples/login.html" class="nav-link">
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Login v1</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="pages/examples/register.html" class="nav-link">
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Register v1</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          href="pages/examples/forgot-password.html"
+                          class="nav-link"
+                        >
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Forgot Password v1</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          href="pages/examples/recover-password.html"
+                          class="nav-link"
+                        >
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Recover Password v1</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>
+                        Login & Register v2
+                        <i class="fas fa-angle-left right"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                        <a href="pages/examples/login-v2.html" class="nav-link">
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Login v2</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          href="pages/examples/register-v2.html"
+                          class="nav-link"
+                        >
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Register v2</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          href="pages/examples/forgot-password-v2.html"
+                          class="nav-link"
+                        >
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Forgot Password v2</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a
+                          href="pages/examples/recover-password-v2.html"
+                          class="nav-link"
+                        >
+                          <i class="far fa-circle nav-icon"></i>
+                          <p>Recover Password v2</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/lockscreen.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Lockscreen</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="pages/examples/legacy-user-menu.html"
+                      class="nav-link"
+                    >
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Legacy User Menu</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      href="pages/examples/language-menu.html"
+                      class="nav-link"
+                    >
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Language Menu</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/404.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Error 404</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/500.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Error 500</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/pace.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Pace</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/examples/blank.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Blank Page</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="starter.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Starter Page</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-search"></i>
+                  <p>
+                    Search
+                    <i class="fas fa-angle-left right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="pages/search/simple.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Simple Search</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="pages/search/enhanced.html" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Enhanced</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-header">MISCELLANEOUS</li>
+              <li class="nav-item">
+                <a href="iframe.html" class="nav-link">
+                  <i class="nav-icon fas fa-ellipsis-h"></i>
+                  <p>Tabbed IFrame Plugin</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="https://adminlte.io/docs/3.1/" class="nav-link">
+                  <i class="nav-icon fas fa-file"></i>
+                  <p>Documentation</p>
+                </a>
+              </li>
+              <li class="nav-header">MULTI LEVEL EXAMPLE</li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fas fa-circle nav-icon"></i>
+                  <p>Level 1</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-circle"></i>
+                  <p>
+                    Level 1<i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Level 2</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>
+                        Level 2<i class="right fas fa-angle-left"></i>
+                      </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                      <li class="nav-item">
+                        <a href="#" class="nav-link">
+                          <i class="far fa-dot-circle nav-icon"></i>
+                          <p>Level 3</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="#" class="nav-link">
+                          <i class="far fa-dot-circle nav-icon"></i>
+                          <p>Level 3</p>
+                        </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="#" class="nav-link">
+                          <i class="far fa-dot-circle nav-icon"></i>
+                          <p>Level 3</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Level 2</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fas fa-circle nav-icon"></i>
+                  <p>Level 1</p>
+                </a>
+              </li>
+              <li class="nav-header">LABELS</li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon far fa-circle text-danger"></i>
+                  <p class="text">Important</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon far fa-circle text-warning"></i>
+                  <p>Warning</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon far fa-circle text-info"></i>
+                  <p>Informational</p>
+                </a>
               </li>
             </ul>
           </nav>
         </div>
       </aside>
-
-      <Modal
-        id="modalPackage"
-        title="เลือกแพกเกจที่ต้องการ"
-        modalSize="modal-lg"
-      >
-        <div className="row">
-          {packages.length > 0
-            ? packages.map((item) => (
-                <div className="col-4">
-                  <div className="card">
-                    <div className="card-body">
-                      <div className="h3">{item.name}</div>
-                      <div className="h4 mt-3 text-primary">
-                        <strong>
-                          {parseInt(item.price).toLocaleString("th-TH")} .-
-                        </strong>
-                        <span className="ms-2">/ เดือน</span>
-                      </div>
-                      <div className="mt-3">
-                        จำนวนบิล
-                        <span className="text-danger ms-2 me-2">
-                          <strong>
-                            {parseInt(item.bill_amount).toLocaleString("th-TH")}
-                          </strong>
-                        </span>
-                        ต่อเดือน
-                      </div>
-                      <div className="mt-3 text-center">
-                        {renderButton(item)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
-            : ""}
-        </div>
-      </Modal>
-
-      <Modal id="modalBank" title="ช่องทางชำระเงิน" modalSize="modal-lg">
-        <div className="h4 text-secondary">
-          Package ที่เลือกคือ{" "}
-          <span className="text-primary">{choosePackage.name}</span>
-        </div>
-        <div className="mt-3 h5">
-          ราคา{" "}
-          <span className="text-danger">
-            {parseInt(choosePackage.price).toLocaleString("th-TH")}
-          </span>{" "}
-          บาท/เดือน
-        </div>
-
-        <table className="table table-bordered table-striped mt-3">
-          <thead>
-            <tr>
-              <th>ธนาคาร</th>
-              <th>เลขบัญชี</th>
-              <th>เจ้าของบัญชี</th>
-              <th>สาขา</th>
-            </tr>
-          </thead>
-          <tbody>
-            {banks.length > 0
-              ? banks.map((item) => (
-                  <tr>
-                    <td>{item.bankType}</td>
-                    <td>{item.bankCode}</td>
-                    <td>{item.bankName}</td>
-                    <td>{item.bankBranch}</td>
-                  </tr>
-                ))
-              : ""}
-          </tbody>
-        </table>
-
-        <div className="alert mt-3 alert-warning">
-          <i className="fa fa-info-circle me-2"></i>
-          เมื่อโอนชำระเงินแล้ว ให้แจ้งที่ไลน ID = tavon.seesenpila
-        </div>
-
-        <div className="mt-3 text-center">
-          <button onClick={handleChangePackage} className="btn btn-primary">
-            <i className="fa fa-check me-2"></i>
-            ยืนยันการสมัคร
-          </button>
-        </div>
-      </Modal>
     </>
   );
-}); // for child
+}
 
 export default Sidebar;

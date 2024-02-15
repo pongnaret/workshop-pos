@@ -3,7 +3,7 @@ import axios from 'axios';
 import config from "../config";
 import Modal from "../components/Modal";
 import Swal from 'sweetalert2';
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Package() {
     const [packages, setPackages] = useState([]);
@@ -12,7 +12,7 @@ function Package() {
     const [phone, setPhone] = useState();
     const [pass, setPass] = useState();
 
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchData();
@@ -62,7 +62,7 @@ function Package() {
                             })
                             document.getElementById('btnModalClose').click();
 
-                           // navigate('/login');
+                           navigate('/login');
                         }
                     }).catch(err => {
                         throw err.response.data;

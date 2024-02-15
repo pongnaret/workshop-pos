@@ -22,7 +22,7 @@ app.get("/testConnect", async(req,res)=>{
 // app.use("/uploads", express.static("uploads"));
 
 app.use(require("./controllers/PackageController"));
-// app.use(require("./controllers/MemberController"));
+app.use(require("./controllers/MemberController"));
 // app.use(require("./controllers/ProductController"));
 // app.use(require("./controllers/ProductImageController"));
 // app.use(require("./controllers/UserController"));

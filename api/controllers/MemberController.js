@@ -1,56 +1,47 @@
 const express = require("express");
-
 const app = express();
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const service = require("./Service");
-const PackageModel = require("../models/PackageModel");
-const MemberModel = require("../models/MemberModel");
+const PackageModel = require('../models/PackageModel');
+const MemberModel = require('../models/MemberModel');
 
-app.get("/member/signin", async (req, res) => {
-    try {
-        const results = await MemberModel.findAll();
-        res.send({ results: results });
-    } catch (e) {
-        res.send({ message: e.message });
-    }
-//   try {
-//     const member = await MemberModel.findAll({
-//     //   where: {
-//     //     phone: req.body.phone,
-//     //     pass: req.body.pass,
-//     //   },
-//     });
 
-//     if (member.length > 0) {
-//       //let token = jwt.sign({ id: member[0].id }, process.env.secret);
-//       //res.send({ token: token, message: "success" });
-//       res.send({ message: "success" });
-//     } else {
-//       //res.statusCode = 401;
-//       res.send({ message: "not found" });
-//     }
-//   } catch (e) {
-//     res.statusCode = 500;
-//     res.send({ message: e.message });
-//   }
+app.post('/member/signin', async (req, res) => {
+  try {
+      const member = await MemberModel.findAll({
+        where: {
+          phone: req.body.phone,
+          pass: req.body.pass,
+        }
+      });
+      if (member.length > 0) {
+        let token = jwt.sign({ id: member[0].id }, process.env.secret);
+        res.send({ token: token, message: "success" });
+      } else {
+        res.statusCode = 401;
+        res.send({ message: "not found" });
+      }      
+  } catch (e) {
+      res.statusCode = 500;
+      res.send({ message: e.message });
+  }
 });
 
-app.get("/member/info", service.isLogin, async (req, res, next) => {
+app.get('/member/info',service.isLogin, async (req, res) => {
   try {
     MemberModel.belongsTo(PackageModel);
-
     const payLoad = jwt.decode(service.getToken(req));
     const member = await MemberModel.findByPk(payLoad.id, {
-      attributes: ["id", "name"],
-      include: [
+      attributes: ['id', 'name'],
+      include:[
         {
-          model: PackageModel,
-          attributes: ["name", "bill_amount"],
-        },
-      ],
+          model:PackageModel,
+          attributes: ['name']
+        }
+      ]
+      
     });
-
     res.send({ result: member, message: "success" });
   } catch (e) {
     res.statusCode = 500;
@@ -77,24 +68,5 @@ app.put("/member/changeProfile", service.isLogin, async (req, res) => {
   }
 });
 
-// app.get("/member/list", service.isLogin, async (req, res) => {
-//   try {
-//     const PackageModel = require("../models/PackageModel");
-//     MemberModel.belongsTo(PackageModel);
-
-//     const results = await MemberModel.findAll({
-//       order: [["id", "DESC"]],
-//       attributes: ["id", "name", "phone", "createdAt"],
-//       include: {
-//         model: PackageModel,
-//       },
-//     });
-
-//     res.send({ message: "success", results: results });
-//   } catch (e) {
-//     res.statusCode = 500;
-//     res.send({ message: e.message });
-//   }
-// });
 
 module.exports = app;

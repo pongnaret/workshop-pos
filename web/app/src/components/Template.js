@@ -18,7 +18,7 @@ const Template = forwardRef((props, ref) => {
     <>
       <div className="wrapper">
         <Navbar />
-        <Sidebar ref={templateRef} />
+        <Sidebar />
 
         <div class="content-wrapper pt-3">
           <section class="content">{props.children}</section>
