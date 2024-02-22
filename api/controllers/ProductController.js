@@ -16,4 +16,51 @@ app.post("/product/insert", Service.isLogin, async (req, res) => {
   }
 });
 
+
+app.get("/product/list", Service.isLogin, async (req, res) => {
+  try {
+    const results = await ProductModel.findAll({
+      where: {
+        userId: Service.getMemberId(req)
+      },
+      order: [["id", "DESC"]],
+    });
+    res.send({ results: results, message: "success" });
+  } catch (e) {
+    res.statusCode = 500;
+    res.send({ message: e.message });
+  }
+});
+
+app.delete("/product/delete/:id", Service.isLogin, async (req, res) => {
+  try {
+    await ProductModel.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+    res.send({ message: "success" });
+  } catch (e) {
+    res.statusCode = 500;
+    res.send({ message: e.message });
+  }
+});
+
+app.post("/product/update", Service.isLogin, async (req, res) => {
+  try {
+    let payload = req.body;
+    payload.userId = Service.getMemberId(req);
+
+    await ProductModel.update(payload, {
+      where: {
+        id: req.body.id,
+      },
+    });
+    res.send({ message: "success" });
+  } catch (e) {
+    res.statusCode = 500;
+    res.send({ message: e.message });
+  }
+});
+
 module.exports = app;

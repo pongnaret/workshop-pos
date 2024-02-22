@@ -46,9 +46,9 @@ function Product() {
     try {
       let url = config.api_path + "/product/insert";
 
-    //   if (product.id !== undefined) {
-    //     url = config.api_path + "/product/update";
-    //   }
+      if (product.id !== undefined) {
+        url = config.api_path + "/product/update";
+      }
 
       await axios.post(url, product, config.headers()).then((res) => {
         if (res.data.message === "success") {
@@ -82,6 +82,37 @@ function Product() {
     });
 }
 
+const handleDelete = (item) => {
+  Swal.fire({
+      title: 'ลบข้อมูล',
+      text: 'ยืนยันการลบข้อมูลออกจากระบบ',
+      icon: 'question',
+      showCancelButton: true,
+      showConfirmButton: true
+  }).then(async res => {
+      if (res.isConfirmed) {
+          try {
+              await axios.delete(config.api_path + '/product/delete/' + item.id, config.headers()).then(res => {
+                  if (res.data.message === 'success') {
+                      fetchData();
+                      Swal.fire({
+                          title: 'ลบข้อมูล',
+                          text: 'ลบข้อมูลแล้ว',
+                          icon: 'success',
+                          timer: 2000
+                      })
+                  }
+              })
+          } catch (e) {
+              Swal.fire({
+                  title: 'error',
+                  text: e.message,
+                  icon: 'error'
+              })
+          }
+      }
+  })
+}
 
   return (
     <>
@@ -133,7 +164,7 @@ function Product() {
                                                 className="btn btn-info mr-2">
                                                 <i className="fa fa-pencil"></i>
                                             </button>
-                                            <button  className="btn btn-danger">
+                                            <button  onClick={e => handleDelete(item)} className="btn btn-danger">
                                                 <i className="fa fa-times"></i>
                                             </button>
                                         </td>
