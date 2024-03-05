@@ -10,7 +10,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Product from "./pages/Product";
-// import User from "./pages/User";
+import User from "./pages/User";
+import Position from './pages/Position';
 // import Sale from "./pages/Sale";
 // import BillSales from "./pages/BillSales";
 // import SumSalePerDay from "./pages/SumSalePerDay";
@@ -33,11 +34,15 @@ const router = createBrowserRouter([
   {
     path: "/product",
     element: <Product />,
+  },
+  {
+    path: "/user",
+    element: <User />,
+  },
+  {
+    path: "/position",
+    element: <Position />,
   }
-  // {
-  //   path: "/user",
-  //   element: <User />,
-  // },
   // {
   //   path: "/sale",
   //   element: <Sale />,

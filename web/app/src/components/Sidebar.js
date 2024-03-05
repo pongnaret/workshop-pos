@@ -132,6 +132,12 @@ function Sidebar() {
                   <p>รายงาน Stock</p>
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link to="/position" className="nav-link">
+                  <i className="nav-icon fas fa-file"></i>
+                  <p>ตำแหน่ง</p>
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
